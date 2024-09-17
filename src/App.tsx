@@ -1,45 +1,130 @@
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import "./App.css";
+import axios from "axios";
+
+interface results {
+  results: simplePokemon[];
+}
+
+interface simplePokemon {
+  name: string;
+  url: string;
+}
+
+interface Pokemon {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  types: Type[];
+  sprites: Other;
+}
+
+interface Type {
+  type: {
+    name: string;
+  };
+}
+
+interface Other {
+  other: Dream_world;
+}
+
+interface Dream_world {
+  dream_world: { front_default: string };
+}
 
 function App() {
-  // Nous utilisons le hook state pour définir des données qui peuvent changer au fil du temps
-  // Similaire 2-way binding dans Angular
-  const [pokemon, setPokemon] = useState("");
+  const types = [
+    "Bug",
+    "Dragon",
+    "Electric",
+    "Fighting",
+    "Fire",
+    "Flying",
+    "Ghost",
+    "Grass",
+    "Ground",
+    "Ice",
+    "Normal",
+    "Poison",
+    "Psychic",
+    "Rock",
+    "Water",
+  ];
+  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
+  const [type, setType] = useState("");
+  const typeRef = useRef<HTMLSelectElement>(null);
 
-  // Nous utilisons le hook Ref pour obtenir les données de l'élément Input
-  const pokeRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    axios
+      .get<results>("https://pokeapi.co/api/v2/pokemon?limit=151")
+      .then((results) => {
+        let temp: Pokemon[] = [];
+        results.data.results.map((simplePokemon) =>
+          axios.get<Pokemon>(simplePokemon.url).then((pokemon) => {
+            temp.push(pokemon.data);
+          })
+        );
+        setPokemons(temp);
+      });
+  }, []);
 
-  // Cette méthode sera exécutée lorsque le bouton Submit est cliqué
   const handleSubmit = (event: FormEvent) => {
-
-    // Par défaut, React actualise la page lorsque le bouton Submit est cliqué
-    // Ce code annulera l'actualisation par défaut
     event.preventDefault();
 
-    // Lorsque les données de l'input ne sont pas vides, nous affectons la valeur à pokemon
-    if (pokeRef.current !== null) {
-      setPokemon(pokeRef.current.value);
+    if (typeRef.current !== null) {
+      setType(typeRef.current.value);
+      console.log(pokemons);
     }
-  }
+  };
+
+  // const render = (selectedType: string, pokemons: Pokemon[]) => {
+  //   let html = ''
+  //   if (!selectedType)
+  //     pokemons.map(poke => html += <p key={poke.id}>{poke.name}</p>)
+  //   else{
+  //     const filteredPokemons = pokemons.filter(poke => poke.types
+  //       .map(type => type.type.name === selectedType))
+  //     filteredPokemons.map(poke => html += <p key={poke.id}>{poke.name}</p>)
+  //   }
+  //   return html;
+  // }
 
   return (
     <>
-      {/* Nous activons la méthode d'événement handleSubmit lorsque le bouton Submit est cliqué */}
-      <div className="mb-3" onSubmit={handleSubmit}>
-        <p>The pokemon you selected : {pokemon.toUpperCase()}</p>
+      <h1 className="mb-3">PokeDex</h1>
+      <div className="mb-" onSubmit={handleSubmit}>
         <form>
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Pokemon's name"
-            
-            // N'oubliez pas d'affecter le hook Ref à l'attribut ref
-            ref={pokeRef}
-          />
-          <button className="btn btn-primary my-2" type="submit">
+          <select className="form-select" ref={typeRef}>
+            <option value="">Select a type</option>
+            {types.map((type) => (
+              <option value={type} key={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+          <button className="btn btn-primary my-3" type="submit">
             Search
           </button>
         </form>
+      </div>
+      <div>
+        {type && <p>Here's {type.toUpperCase()} pokemons : </p>}
+        {!type &&
+          pokemons.map((poke) => (
+            <>
+              <img src={poke.sprites.other.dream_world.front_default} />
+              <p>{poke.name}</p>
+            </>
+          ))}
+        
+        {/* <div>{render(type, pokemons)}</div> */}
+
+        {/* {!type && pokemons.map((poke) => <p key={poke.id}>{poke.name}</p>)}
+        {type && pokemons.map((poke) =>
+        poke.types.map(item => item.type.name == type && <p key={poke.id}>{poke.name}</p>)
+        )} */}
       </div>
     </>
   );
