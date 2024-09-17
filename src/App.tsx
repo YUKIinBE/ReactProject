@@ -18,7 +18,6 @@ function App() {
 
     // Lorsque les données de l'input ne sont pas vides, nous affectons la valeur à pokemon
     if (pokeRef.current !== null) {
-      console.log('pokeRef !== null')
       setPokemon(pokeRef.current.value);
     }
   }
