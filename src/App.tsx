@@ -63,6 +63,11 @@ function App() {
         let temp: Pokemon[] = [];
         results.data.results.map((simplePokemon) =>
           axios.get<Pokemon>(simplePokemon.url).then((pokemon) => {
+
+            //! Ce qui est commenté était ce que je voulais faire au départ, mais comme ça ne marche pas, j'utilise « let temp: Pokemon[] »
+            //! Quand j'ai utilisé « setPokemon([pokemon.data, ...pokemons]) », React a stocké chaque fois UN SEUL pokemon et quand une nouvelle donnée arrive, il écrase l'ancien
+            //! J'aimerais utiliser ceci mais je ne comprends pas pourquoi ça écrase...
+            // setPokemons([pokemon.data, ...pokemons])
             temp.push(pokemon.data);
           })
         );
@@ -75,21 +80,8 @@ function App() {
 
     if (typeRef.current !== null) {
       setType(typeRef.current.value);
-      console.log(pokemons);
     }
   };
-
-  // const render = (selectedType: string, pokemons: Pokemon[]) => {
-  //   let html = ''
-  //   if (!selectedType)
-  //     pokemons.map(poke => html += <p key={poke.id}>{poke.name}</p>)
-  //   else{
-  //     const filteredPokemons = pokemons.filter(poke => poke.types
-  //       .map(type => type.type.name === selectedType))
-  //     filteredPokemons.map(poke => html += <p key={poke.id}>{poke.name}</p>)
-  //   }
-  //   return html;
-  // }
 
   return (
     <>
@@ -111,20 +103,16 @@ function App() {
       </div>
       <div>
         {type && <p>Here's {type.toUpperCase()} pokemons : </p>}
+        
+        {/* //! Apparement React essaie de render html avant que la réponse de API est complètement revenue.
+        //! MAIS comme « pokemons » est un State Hook, il est censé render chaque fois quand il y a un changement */}
         {!type &&
           pokemons.map((poke) => (
-            <>
+            <div className="pokemon-grid" key={poke.id}>
               <img src={poke.sprites.other.dream_world.front_default} />
               <p>{poke.name}</p>
-            </>
+            </div>
           ))}
-        
-        {/* <div>{render(type, pokemons)}</div> */}
-
-        {/* {!type && pokemons.map((poke) => <p key={poke.id}>{poke.name}</p>)}
-        {type && pokemons.map((poke) =>
-        poke.types.map(item => item.type.name == type && <p key={poke.id}>{poke.name}</p>)
-        )} */}
       </div>
     </>
   );
