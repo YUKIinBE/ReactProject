@@ -27,6 +27,7 @@ interface Type {
 }
 
 interface Other {
+  front_default: string;
   other: Dream_world;
 }
 
@@ -81,6 +82,7 @@ function App() {
     if (typeRef.current !== null) {
       setType(typeRef.current.value);
     }
+    console.log(pokemons);
   };
 
   return (
@@ -105,14 +107,17 @@ function App() {
         {type && <p>Here's {type.toUpperCase()} pokemons : </p>}
         
         {/* //! Apparement React essaie de render html avant que la réponse de API est complètement revenue.
-        //! MAIS comme « pokemons » est un State Hook, il est censé render chaque fois quand il y a un changement */}
-        {!type &&
-          pokemons.map((poke) => (
+        //! MAIS comme « pokemons » est un State Hook, il est censé render chaque fois quand il y a un changement
+        //! Qunad je selectionne un type, comme ça fait un re-render, tous les pokemons seront présents
+        */}        
+        <div className="pokemons-container">
+          {pokemons.map((poke) => (
             <div className="pokemon-grid" key={poke.id}>
-              <img src={poke.sprites.other.dream_world.front_default} />
+              <img src={poke.sprites.front_default} />
               <p>{poke.name}</p>
             </div>
           ))}
+          </div>
       </div>
     </>
   );

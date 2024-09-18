@@ -1,0 +1,8 @@
+.pokemons-container{
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	
+	position: absolute;
+	left: 50px;
+	right: 50px;
+}
