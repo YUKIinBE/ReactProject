@@ -1,8 +1,26 @@
+:host{
+	display: flex;
+	justify-content: center;
+}
+h1{
+	text-align: center;
+	padding: 20px;
+}
 .pokemons-container{
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-	
-	position: absolute;
-	left: 50px;
-	right: 50px;
+
+	&>div{
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		&>img{
+			width: 150px;
+		}
+	}
+}
+.selected-type{
+	font-weight: bold;
 }

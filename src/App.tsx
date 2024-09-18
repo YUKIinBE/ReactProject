@@ -104,7 +104,7 @@ function App() {
         </form>
       </div>
       <div>
-        {type && <p>Here's {type.toUpperCase()} pokemons : </p>}
+        {type && <p className="selected-type">Here's {type.toUpperCase()} pokemons : </p>}
         
         {/* //! Apparement React essaie de render html avant que la réponse de API est complètement revenue.
         //! MAIS comme « pokemons » est un State Hook, il est censé render chaque fois quand il y a un changement
